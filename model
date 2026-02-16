@@ -1,0 +1,211 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider, Button
+from matplotlib.gridspec import GridSpec
+
+# --- Configuration ---
+MAX_N = 100000  # Max integer to sift
+INIT_N = 10000  # Initial number of points to show
+INIT_LAMBDA = 1.0 
+INIT_OMEGA = 2.95 
+
+def sieve_of_eratosthenes(n):
+    """Generate primes up to n efficiently."""
+    primes = []
+    is_prime = np.ones(n + 1, dtype=bool)
+    is_prime[0:2] = False
+    for p in range(2, int(np.sqrt(n)) + 1):
+        if is_prime[p]:
+            is_prime[p*p:n+1:p] = False
+    return np.nonzero(is_prime)[0]
+
+# Precompute primes
+print(f"Generating primes up to {MAX_N}...")
+PRIMES = sieve_of_eratosthenes(MAX_N)
+print(f"Found {len(PRIMES)} primes.")
+
+# --- Visualization Logic ---
+fig = plt.figure(figsize=(16, 9))
+gs = GridSpec(2, 3, height_ratios=[4, 1], width_ratios=[1, 1, 0.5])
+
+# Arch Plot (Top Left)
+ax1 = fig.add_subplot(gs[0, 0])
+# Log Plot (Top Middle)
+ax2 = fig.add_subplot(gs[0, 1])
+# Complex Control (Top Right)
+ax_ctrl = fig.add_subplot(gs[0, 2])
+
+# Global State
+state = {
+    'max_n': INIT_N,
+    'lambda': INIT_LAMBDA,
+    'omega': INIT_OMEGA,
+}
+
+# --- Plot 1: Archimedean ---
+def get_archimedean_xy(limit):
+    subset = PRIMES[PRIMES <= limit]
+    x = subset * np.cos(subset)
+    y = subset * np.sin(subset)
+    return x, y
+
+# --- Plot 2: Logarithmic ---
+def get_logarithmic_data(limit, lam, omega):
+    subset = PRIMES[PRIMES <= limit]
+    
+    # Ranges
+    mask1 = (subset >= 1) & (subset <= 7)
+    mask2 = (subset >= 8) & (subset <= 44)
+    mask3 = (subset >= 45) & (subset <= 710)
+    mask4 = (subset >= 711)
+    
+    masks = [mask1, mask2, mask3, mask4]
+    colors = ['orange', 'red', 'purple', 'blue']
+    sizes = [20, 15, 5, 1] 
+    
+    data = []
+    for m, c, s in zip(masks, colors, sizes):
+        p_subset = subset[m]
+        if len(p_subset) == 0:
+            data.append((np.array([]), np.array([]), c, s))
+            continue
+            
+        log_p = np.log(p_subset)
+        r = np.power(p_subset, lam) 
+        theta = omega * log_p         
+        
+        x = r * np.cos(theta)
+        y = r * np.sin(theta)
+        data.append((x, y, c, s))
+        
+    return data
+
+# Setup Arch Plot
+scat_arch = ax1.scatter([], [], s=1, c='blue', alpha=0.5, label='Primes')
+ax1.set_title("Action 1: Archimedean Spiral\n$r = \\theta = p$")
+ax1.set_aspect('equal')
+ax1.grid(True, alpha=0.3)
+
+# Setup Log Plot
+scats_log = []
+labels = ['1-7', '8-44', '45-710', '711+']
+colors = ['orange', 'red', 'purple', 'blue']
+for lbl, c in zip(labels, colors):
+    s = ax2.scatter([], [], s=1, c=c, label=lbl) 
+    scats_log.append(s)
+ax2.set_title("Action 2: Log Scale via $s=\\lambda+i\\omega$\n$z = p^{\\lambda} e^{i \\omega \\ln p}$")
+ax2.set_aspect('equal')
+ax2.grid(True, alpha=0.3)
+ax2.legend(loc='upper right')
+
+# Setup Complex Control Plot
+ctrl_point, = ax_ctrl.plot([INIT_LAMBDA], [INIT_OMEGA], 'ro', markersize=10, label='Parameter $s$')
+ax_ctrl.set_title("Complex Parameter Control\n$s \\in \\mathbb{C}, s = \\lambda + i\\omega$")
+ax_ctrl.set_xlabel("Re(s) = $\\lambda$")
+ax_ctrl.set_ylabel("Im(s) = $\\omega$")
+ax_ctrl.set_xlim(-2, 4)
+ax_ctrl.set_ylim(-10, 10)
+ax_ctrl.grid(True)
+ax_ctrl.axhline(0, color='black', lw=1)
+ax_ctrl.axvline(0, color='black', lw=1)
+
+# --- Update Logic ---
+def update_arch(limit):
+    x, y = get_archimedean_xy(limit)
+    scat_arch.set_offsets(np.c_[x, y])
+    limit_r = limit * 1.1
+    ax1.set_xlim(-limit_r, limit_r)
+    ax1.set_ylim(-limit_r, limit_r)
+    
+def update_log(limit, lam, omg):
+    # Update scatter
+    data_list = get_logarithmic_data(limit, lam, omg)
+    all_x = []
+    all_y = []
+    for i, (x, y, c, s) in enumerate(data_list):
+        if len(x) > 0:
+            scats_log[i].set_offsets(np.c_[x, y])
+            scats_log[i].set_sizes([s]*len(x))
+            all_x.extend(x)
+            all_y.extend(y)
+        else:
+            scats_log[i].set_offsets(np.zeros((0, 2)))
+            
+    # Scale
+    if len(all_x) > 0:
+        max_r = np.max(np.hypot(all_x, all_y))
+        if max_r == 0: max_r = 1
+        view_lim = max_r * 1.1
+        ax2.set_xlim(-view_lim, view_lim)
+        ax2.set_ylim(-view_lim, view_lim)
+        
+    # Update Control Point
+    ctrl_point.set_data([lam], [omg])
+    
+    # Update Sliders (without triggering callback loop)
+    # We use a flag or check if values differ significantly
+    if abs(s_lam.val - lam) > 1e-6: s_lam.set_val(lam)
+    if abs(s_omg.val - omg) > 1e-6: s_omg.set_val(omg)
+
+def update_all(val=None):
+    # Gather from sliders generally, but this function is dual-purpose
+    # If called from sliders, use slider values.
+    # If called from mouse, update sliders.
+    
+    # Here we assume sliders are source of truth unless overridden
+    lam = s_lam.val
+    omg = s_omg.val
+    limit = int(s_max.val)
+    
+    update_arch(limit) # actually only depends on limit
+    update_log(limit, lam, omg)
+    fig.canvas.draw_idle()
+
+# --- Interactive Control on ax_ctrl ---
+def on_click(event):
+    if event.inaxes == ax_ctrl:
+        state['lambda'] = event.xdata
+        state['omega'] = event.ydata
+        # Update sliders which triggers update_all
+        s_lam.set_val(state['lambda'])
+        s_omg.set_val(state['omega'])
+
+def on_motion(event):
+    if event.inaxes == ax_ctrl and event.button == 1: # Left click drag
+        state['lambda'] = event.xdata
+        state['omega'] = event.ydata
+        s_lam.set_val(state['lambda'])
+        s_omg.set_val(state['omega'])
+
+fig.canvas.mpl_connect('button_press_event', on_click)
+fig.canvas.mpl_connect('motion_notify_event', on_motion)
+
+# --- Sliders ---
+# Place sliders in bottom area
+ax_max = plt.axes([0.1, 0.1, 0.4, 0.03])
+s_max = Slider(ax_max, 'Max N', 100, MAX_N, valinit=state['max_n'], valstep=100)
+
+ax_lam = plt.axes([0.1, 0.05, 0.4, 0.03])
+s_lam = Slider(ax_lam, 'Re(s) $\\lambda$', -2.0, 4.0, valinit=state['lambda'])
+
+ax_omg = plt.axes([0.55, 0.05, 0.4, 0.03])
+s_omg = Slider(ax_omg, 'Im(s) $\\omega$', -10.0, 10.0, valinit=state['omega'])
+
+s_max.on_changed(update_all)
+s_lam.on_changed(update_all)
+s_omg.on_changed(update_all)
+
+# Reset
+reset_ax = plt.axes([0.8, 0.01, 0.1, 0.03])
+button = Button(reset_ax, 'Reset', hovercolor='0.975')
+def reset(event):
+    s_lam.set_val(INIT_LAMBDA)
+    s_omg.set_val(INIT_OMEGA)
+    s_max.set_val(INIT_N)
+button.on_clicked(reset)
+
+# Initial Draw
+update_all()
+
+print("Interactive Prime Spiral Visualization Running (Complex Control)...")
+plt.show()
