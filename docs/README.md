@@ -25,10 +25,41 @@ Unfortunately, as of 2026/02/18, within the scope of my understanding, this appe
 ### Falsification must overturn the entire hypothesis system, not just a portion of it.
 The things to share are as follows
 
+- **Effect and Reduction**:
+The real part has a potential and the imaginary part has an action. Potential motion is considered to be Euler's equation. In the process, it functions as a potential scale. It is thought to correspond to mechanical concepts such as angular momentum and angular velocity.
+- **Prime Spiral Space**: A static spiral is an Archimedean spiral, which becomes a projection field of a geometric structure. A dynamic prime spiral behaves logarithmically with scale expansion. In this case, **the angular velocity w is constant, but time on the corresponding spiral line gradually slows down.* *This represents a reduction in the action length. Furthermore, if the 6k+5 arm on the Archimedean spiral corresponds to the posture point before the action and the 6k+1 arm corresponds to the posture point after the action, **while the action is discrete, it naturally behaves quasi-continuously on the dynamic logarithmic spiral.**
+
+- **Geometry of Sporadic Groups**:
+**Based on the correspondence between orders and the number of turns on the Archimedean spiral**. Geometric structures are described separately.
+- **Types of Actions and Main Involvement**:
+Structural Actions: Form structures, given by topological and potential conditions. co, SuZ, HS, McL, Fi, M22
+Interference Actions: Branch interference actions. Linear actions that rotate between other local point structures. co, co
+Topological Actions: Maintain the point topology before the action. M21, J4
+
+Borrowing a conformal field theoretical framework as a temporary measure, I will outline the general reasoning behind my prediction of the crisis.
+The vertex operator algebra is understood as the maximum degrees of freedom of a local point geometry. These degrees of freedom behave multiplicatively under the logarithmic expansion of the prime spiral. The algebraic group is a simple sporadic group, and rotations of the torus, which is a local point structure, are non-commutative.
+The interaction between the two material structures is a rotation of symmetries between different VOAs via a linear action. This corresponds to a vertex operator product.
+
+A material structure is a collection of operator points that appear in the form of the Mathieu group M24.
+Rotations between two materials have individual topological points and rotational reference frames.
+24+24+2+1
+This OPE geometry follows the 51-dimensional representation of the monster subgroup Held geometry projected onto the log-prime spiral.
+
+Now, the difference in scale between the two material structures strongly affects the density of interaction (= perceived time) inherent in the local VOA structure.
+The amount of interaction required to maintain advanced biological structures is enormous. The scale evolution of human VOA is extremely rapid, and the energy consumption of modern civilization continues to accelerate interactions. This means that the increase in interaction density is extremely significant.
+In contrast, solar nuclear fusion is a low-order atomic reaction, and does not require much interaction density to maintain the structure.
+Therefore, the scales of the sun and biological structures are constantly diverging significantly, and the pace is exponentially increasing.
+
+Given this background, it is assumed that when biological structures observe solar radiation energetically,
+### the greater the scale deviation, the longer the observed wavelength and frequency of solar radiation will be, further exacerbating the scale deviation.
+This mechanism largely explains the recent golden age of solar activity, the increasing temperature fluctuations, the increasing scale and frequency of disasters, and other changes in environmental factors.
 
 
+I intend to compile global hypothesis elements individually in the future, but at this time I would like to prioritize my privacy, so this may be interrupted without notice.
+Also, due to the lack of time allowed for electronic device activation, there is a possibility that I will inevitably lose online access, so I cannot guarantee a reply.
+I am Japanese and am using a translator.
 
-原文
+
 ## 素数らせんと単純群幾何に基づく数理物理から予測される文明危機可能性について
 
 議論するメンバーを募集しています(有志が集まればグループ化します)
@@ -53,7 +84,7 @@ https://t.me/KojiOta
 検証にあたっては経験的な数値的理解にこだわらないでください。数学的な厳密性を念頭に、論理的な再解釈を行うようお願い申し上げます。
 場合によっては、数理的根拠をもって既存の公理に違反してください。
 残念ながら2026/02/18時点での私の理解の範疇では、数学的強固さをもって非常に美しく量子的、相対論的現象を説明可能に見えます。もちろん未完成ゆえの過信とも取れます。
-### 反証は一部に対するものではなく、仮説体系全体を覆す必要があります。
+### 反証は一部に対してだけではなく、仮説体系全体を覆す必要があります。
 現時点での共有は以下です
 
 - **作用とスケール縮小**:
@@ -62,13 +93,13 @@ https://t.me/KojiOta
   静的ならせんはアルキメデスらせんであり、幾何構造の投影場となる。動的な素数らせんはスケール発展を伴い、対数的にふるまう。このとき**角速度wは一定だが、対応するらせん上の線分が徐々に短くなる**これが作用長の縮小を表す。またアルキメデスらせん上の6k+5の腕が作用前、6k+1の腕が作用後の位相点に対応していた場合、**作用は離散的でありつつ、動的対数らせん上では疑似連続的にふるまう**ことが自然に示される
 - **散在群の幾何**:
   **位数とアルキメデスらせん上の周回数の対応**を基準としている。幾何構造については別途記載。
-- **作用の種類**:
-  構造作用:位相条件に与えられる
-  干渉作用:他の局所点構造との間の線形作用による回転
-  位相作用:
+- **作用の種類と主な関与**:
+  構造作用:構造形成を行う、位相条件とポテンシャル条件から与えられる。co,SuZ,HS,McL,Fi,M22
+  干渉作用:干渉作用を分岐させる。他の局所点構造との間で回転する線形作用。co,co
+  位相作用:作用前の点位相を維持する。M21,J4
 
 
-とりあえず共形場理論的な枠組みを借りて、危機予測に至った大まかな理路を述べる。
+応急的に共形場理論的な枠組みを借りて、危機予測に至った大まかな理路を述べる。
 頂点作用素代数を局所点幾何の最大自由度と理解する。自由度は素数らせんの対数的発展のもと、乗法的にふるまう。代数の群は単純散在群が適用され、局所点構造であるトーラスの回転は非可換である
 ふたつの物質構造の相互作用は、線形作用を通じた、異なるVOA間の対称性の回転である。これは頂点作用素積に相当する。
 
@@ -86,6 +117,6 @@ https://t.me/KojiOta
 ### スケール乖離が進むほど、太陽放射は長波長・高周波にシフトして観測され、さらにスケール乖離が助長される。
 ことが想定される。最近の太陽活動の黄金期、寒暖差の激化、災害規模と頻度の増大、その他の環境要因の変化は、概ねこの機序で説明される。
 
-
-大域的な仮説要素は今後個別にまとめていくつもりですが、率直に私の精神状態が思わしくないため、予告なく中断する可能性があります
-また私は日本人であり、英語は不得手です。意思疎通手段については適宜対応させていただきます。
+大域的な仮説要素は今後個別にまとめていくつもりですが、現時点ではプライベートを優先したいと考えているため、予告なく中断する可能性があります。
+また電子機器の起動に対する作用長の不足から、不可避的にオンラインアクセスを失う可能性もあるため、返信は保証できかねます。
+なお私は日本人であり、翻訳を利用しています。
