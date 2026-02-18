@@ -1,4 +1,6 @@
 
+prime_spiral(λ=0.5)
+
 双方とも素数らせんである。素数点を虚数作用上の自由度とする。着想としてはSelberg trace formula/ Hilbert–Pólya conjectureに近い。スケール発展は|w|の減少である
 
 Action1のアルキメデスのらせんは、静的な幾何条件で結びつく点の位置を表す。
