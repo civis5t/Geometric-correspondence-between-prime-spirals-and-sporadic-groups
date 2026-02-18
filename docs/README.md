@@ -1,10 +1,5 @@
 ## Possible civilizational crisis predicted by mathematical physics based on prime spirals and simple group geometry
 
-I'm looking for members to join the discussion (I'll create a group once we have enough volunteers).
-https://t.me/KojiOta
-If my approach is sound, I'm in dire need of interdisciplinary and flexible knowledge across a wide range of fields, including theoretical physics, condensed matter physics, particle physics, chemistry, astronomy, and mathematics.
-Even if you're just curious or just looking around, I'd appreciate your help.
-
 The current anticipated challenges are:
 #### The expansion of the Sun, the increase in radiant energy, and its acceleration
 #### Rapid cooling of the environment due to accelerated biological metabolism
@@ -61,12 +56,6 @@ I am Japanese and am using a translator.
 
 
 ## 素数らせんと単純群幾何に基づく数理物理から予測される文明危機可能性について
-
-議論するメンバーを募集しています(有志が集まればグループ化します)
-https://t.me/KojiOta
-もし私のアプローチが妥当であるならば、直ちに理論物理・物性物理・素粒子物理・化学・天文・数学などにまたがる、学際的かつ柔軟な知見が必要になります。
-興味本位でも構いません、どうかご協力お願い申し上げます。
-
 
 さて、目下の予期される困難は
 #### 太陽の巨大化と放射エネルギー増大、その加速
