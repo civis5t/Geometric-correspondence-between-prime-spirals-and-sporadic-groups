@@ -1,0 +1,234 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider, Button
+from matplotlib.gridspec import GridSpec
+
+# --- Configuration ---
+MAX_N = 105000  # Max integer to sift. Increased to cover 104349+ range.
+INIT_N = 10000  # Initial number of points to show
+# Fixed lambda per user request
+FIXED_LAMBDA = 0.5 
+INIT_OMEGA = 2.95 
+
+def sieve_of_eratosthenes(n):
+    """Generate primes up to n efficiently."""
+    primes = []
+    is_prime = np.ones(n + 1, dtype=bool)
+    is_prime[0:2] = False
+    for p in range(2, int(np.sqrt(n)) + 1):
+        if is_prime[p]:
+            is_prime[p*p:n+1:p] = False
+    return np.nonzero(is_prime)[0]
+
+# Precompute primes
+print(f"Generating primes up to {MAX_N}...")
+PRIMES = sieve_of_eratosthenes(MAX_N)
+print(f"Found {len(PRIMES)} primes.")
+
+# --- Visualization Logic ---
+fig = plt.figure(figsize=(16, 9))
+gs = GridSpec(2, 3, height_ratios=[4, 1], width_ratios=[1, 1, 0.5])
+
+# Arch Plot (Top Left)
+ax1 = fig.add_subplot(gs[0, 0])
+# Log Plot (Top Middle)
+ax2 = fig.add_subplot(gs[0, 1])
+# Complex Control (Top Right)
+ax_ctrl = fig.add_subplot(gs[0, 2])
+
+# Global State
+state = {
+    'max_n': INIT_N,
+    'lambda': FIXED_LAMBDA,
+    'omega': INIT_OMEGA,
+}
+
+# --- Data Helper ---
+def get_classified_data(limit):
+    """Returns list of (subset_primes, color, size, label) tuples."""
+    subset = PRIMES[PRIMES <= limit]
+    
+    # Ranges
+    # 1-7: Orange
+    mask1 = (subset >= 1) & (subset <= 7)
+    # 8-44: Red
+    mask2 = (subset >= 8) & (subset <= 44)
+    # 45-710: Purple
+    mask3 = (subset >= 45) & (subset <= 710)
+    # 711 - 103993: Blue
+    mask4 = (subset >= 711) & (subset <= 103993)
+    # 103994 - 104348: Green
+    mask5 = (subset >= 103994) & (subset <= 104348)
+    # 104349+: Gray
+    mask6 = (subset >= 104349)
+    
+    masks = [mask1, mask2, mask3, mask4, mask5, mask6]
+    colors = ['orange', 'red', 'purple', 'blue', 'green', 'gray']
+    sizes = [20, 15, 5, 0.5, 5, 0.5] # Adjusted sizes for visibility
+    labels = ['1-7', '8-44', '45-710', '711-103993', '103994-104348', '104349+']
+    
+    data = []
+    for m, c, s, l in zip(masks, colors, sizes, labels):
+        p_sub = subset[m]
+        data.append({
+            'primes': p_sub,
+            'color': c,
+            'size': s,
+            'label': l
+        })
+    return data
+
+# --- Plot 1: Archimedean ---
+def get_archimedean_xy(primes):
+    if len(primes) == 0: return np.array([]), np.array([])
+    x = primes * np.cos(primes)
+    y = primes * np.sin(primes)
+    return x, y
+
+# --- Plot 2: Logarithmic ---
+def get_logarithmic_xy(primes, lam, omega):
+    if len(primes) == 0: return np.array([]), np.array([])
+    log_p = np.log(primes)
+    r = np.power(primes, lam) 
+    theta = omega * log_p         
+    x = r * np.cos(theta)
+    y = r * np.sin(theta)
+    return x, y
+
+# --- Setup Scatter Plots ---
+# We need separate scatter objects for each color group on BOTH subplots
+scats_arch = []
+scats_log = []
+labels = ['1-7', '8-44', '45-710', '711-103993', '103994-104348', '104349+']
+colors = ['orange', 'red', 'purple', 'blue', 'green', 'gray']
+
+for lbl, c in zip(labels, colors):
+    s1 = ax1.scatter([], [], s=1, c=c, label=lbl)
+    scats_arch.append(s1)
+    
+    s2 = ax2.scatter([], [], s=1, c=c, label=lbl)
+    scats_log.append(s2)
+
+ax1.set_title("Action 1: Archimedean Spiral\n$r = \\theta = p$")
+ax1.set_aspect('equal')
+ax1.grid(True, alpha=0.3)
+# ax1.legend(loc='upper right', markerscale=5) # Too cluttered probably
+
+ax2.set_title(f"Action 2: Log Scale ($\\lambda={FIXED_LAMBDA}$)\n$z = p^{FIXED_LAMBDA} e^{{i \\omega \\ln p}}$")
+ax2.set_aspect('equal')
+ax2.grid(True, alpha=0.3)
+ax2.legend(loc='upper right', markerscale=5, fontsize='small')
+
+# Setup Complex Control Plot (Restricted to vertical line)
+ax_ctrl.axvline(FIXED_LAMBDA, color='gray', linestyle='--', alpha=0.5)
+ctrl_point, = ax_ctrl.plot([FIXED_LAMBDA], [INIT_OMEGA], 'ro', markersize=10, label='Parameter $s$')
+
+ax_ctrl.set_title("Complex Parameter Control\nOnly $Im(s)$ varies ($\Re(s)=0.5$)")
+ax_ctrl.set_xlabel("Re(s) = $\\lambda$ (Fixed)")
+ax_ctrl.set_ylabel("Im(s) = $\\omega$")
+ax_ctrl.set_xlim(-0.5, 1.5) 
+ax_ctrl.set_ylim(-10, 10)
+ax_ctrl.grid(True)
+ax_ctrl.axhline(0, color='black', lw=1)
+
+# --- Update Logic ---
+def update_plots(limit, omg):
+    # Get classified data
+    data_list = get_classified_data(limit)
+    
+    all_x_arch = []
+    all_y_arch = []
+    
+    all_x_log = []
+    all_y_log = []
+    
+    for i, item in enumerate(data_list):
+        primes = item['primes']
+        c = item['color']
+        s = item['size']
+        
+        # --- Arch Update ---
+        x, y = get_archimedean_xy(primes)
+        if len(x) > 0:
+            scats_arch[i].set_offsets(np.c_[x, y])
+            scats_arch[i].set_sizes([s]*len(x))
+            all_x_arch.extend(x)
+            all_y_arch.extend(y)
+        else:
+            scats_arch[i].set_offsets(np.zeros((0, 2)))
+            
+        # --- Log Update ---
+        x, y = get_logarithmic_xy(primes, FIXED_LAMBDA, omg)
+        if len(x) > 0:
+            scats_log[i].set_offsets(np.c_[x, y])
+            scats_log[i].set_sizes([s]*len(x))
+            all_x_log.extend(x)
+            all_y_log.extend(y)
+        else:
+            scats_log[i].set_offsets(np.zeros((0, 2)))
+            
+    # Scale Arch
+    if len(all_x_arch) > 0:
+        # Archimedean radius is just the prime number itself.
+        # Max radius is approx limit.
+        view_lim = limit * 1.1
+        ax1.set_xlim(-view_lim, view_lim)
+        ax1.set_ylim(-view_lim, view_lim)
+
+    # Scale Log
+    if len(all_x_log) > 0:
+        max_r = np.max(np.hypot(all_x_log, all_y_log))
+        if max_r == 0: max_r = 1
+        view_lim = max_r * 1.1
+        ax2.set_xlim(-view_lim, view_lim)
+        ax2.set_ylim(-view_lim, view_lim)
+        
+    # Update Control Point
+    ctrl_point.set_data([FIXED_LAMBDA], [omg])
+    
+    # Update Slider
+    if abs(s_omg.val - omg) > 1e-6: s_omg.set_val(omg)
+
+def update_all(val=None):
+    omg = s_omg.val
+    limit = int(s_max.val)
+    update_plots(limit, omg)
+    fig.canvas.draw_idle()
+
+# --- Interactive Control on ax_ctrl ---
+def on_click(event):
+    if event.inaxes == ax_ctrl:
+        state['omega'] = event.ydata
+        s_omg.set_val(state['omega'])
+
+def on_motion(event):
+    if event.inaxes == ax_ctrl and event.button == 1: 
+        state['omega'] = event.ydata
+        s_omg.set_val(state['omega'])
+
+fig.canvas.mpl_connect('button_press_event', on_click)
+fig.canvas.mpl_connect('motion_notify_event', on_motion)
+
+# --- Sliders ---
+ax_max = plt.axes([0.1, 0.1, 0.4, 0.03])
+s_max = Slider(ax_max, 'Max N', 100, MAX_N, valinit=state['max_n'], valstep=100)
+
+ax_omg = plt.axes([0.55, 0.05, 0.4, 0.03])
+s_omg = Slider(ax_omg, 'Im(s) $\\omega$', -10.0, 10.0, valinit=state['omega'])
+
+s_max.on_changed(update_all)
+s_omg.on_changed(update_all)
+
+# Reset
+reset_ax = plt.axes([0.8, 0.01, 0.1, 0.03])
+button = Button(reset_ax, 'Reset', hovercolor='0.975')
+def reset(event):
+    s_omg.set_val(INIT_OMEGA)
+    s_max.set_val(INIT_N)
+button.on_clicked(reset)
+
+# Initial Draw
+update_all()
+
+print("Interactive Prime Spiral Visualization Running (Extended Colors)...")
+plt.show()
